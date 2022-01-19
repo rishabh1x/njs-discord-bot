@@ -1,10 +1,11 @@
-const { Client, MessageEmbed } = require('discord.js');
+const { Client, Intents } = require('discord.js');
+const { all } = require('express/lib/application');
 const config = require('./config');
 const commands = require('./help');
 
-const token = process.env['token']
-
+let allFlags = Intents.FLAGS;
 let bot = new Client({
+  intents: [allFlags.GUILDS, allFlags.GUILD_MESSAGES, allFlags.GUILD_PRESENCES],
   fetchAllMembers: true, // Remove this if the bot is in large guilds.
   presence: {
     status: 'online',
@@ -17,7 +18,7 @@ let bot = new Client({
 
 bot.on('ready', () => console.log(`Logged in as ${bot.user.tag}.`));
 
-bot.on('message', async message => {
+bot.on('messageCreate', async message => {
   // Check for command
   if (message.content.startsWith(config.prefix)) {
     let args = message.content.slice(config.prefix.length).split(' ');
@@ -35,8 +36,8 @@ bot.on('message', async message => {
         if (args.length > 0)
           message.channel.send(args.join(' '));
         else
-          message.reply('You did not send a message to repeat, cancelling command.')
-        break
+          message.reply('You did not send a message to repeat, cancelling command.');
+        break;
 
       /* Unless you know what you're doing, don't change this command. */
       case 'help':
@@ -52,7 +53,7 @@ bot.on('message', async message => {
           if (Object.keys(commands).includes(args[0].toLowerCase()) || Object.keys(commands).map(c => commands[c].aliases || []).flat().includes(args[0].toLowerCase())) {
             let command = Object.keys(commands).includes(args[0].toLowerCase())? args[0].toLowerCase() : Object.keys(commands).find(c => commands[c].aliases && commands[c].aliases.includes(args[0].toLowerCase()));
             embed
-              .setTitle(`COMMAND - ${command}`)
+              .setTitle(`COMMAND - ${command}`);
 
             if (commands[command].aliases)
               embed.addField('Command aliases', `\`${commands[command].aliases.join('`, `')}\``);
@@ -72,4 +73,4 @@ bot.on('message', async message => {
 });
 
 require('./server')();
-bot.login(token);
+bot.login(config.token);
