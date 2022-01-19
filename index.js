@@ -5,7 +5,7 @@ const commands = require('./help');
 
 let allFlags = Intents.FLAGS;
 let bot = new Client({
-  intents: [allFlags.GUILDS, allFlags.GUILD_MESSAGES, allFlags.GUILD_PRESENCES],
+  intents: [allFlags.GUILDS, allFlags.GUILD_MESSAGES],
   fetchAllMembers: true, // Remove this if the bot is in large guilds.
   presence: {
     status: 'online',
